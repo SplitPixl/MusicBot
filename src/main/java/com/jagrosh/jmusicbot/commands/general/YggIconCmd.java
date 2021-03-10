@@ -6,6 +6,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.utils.YggdrasilIconManager;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import net.dv8tion.jda.api.entities.ISnowflake;
 
 public class YggIconCmd extends Command {
     private final Bot bot;
@@ -32,13 +33,18 @@ public class YggIconCmd extends Command {
 
         public UpdateCmd(Bot bot) {
             this.name = "update";
-            this.guildOnly = false;
+            this.guildOnly = true;
             this.bot = bot;
         }
 
         @Override
         protected void execute(CommandEvent event) {
-            bot.getYggdrasilIconManager().update();
+            if (event.getMember().getRoles().stream().map(ISnowflake::getIdLong).anyMatch(l -> l == 344176943354347534L)) {
+                bot.getYggdrasilIconManager().update(false);
+                event.replySuccess("Name and icon changed!");
+            } else {
+                event.replyError(">:(");
+            }
         }
     }
 }

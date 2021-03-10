@@ -16,6 +16,7 @@
 package com.jagrosh.jmusicbot;
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.examples.command.*;
 import com.jagrosh.jmusicbot.commands.admin.*;
@@ -100,6 +101,7 @@ public class JMusicBot
                 .setOwnerId(Long.toString(config.getOwnerId()))
                 .setEmojis(config.getSuccess(), config.getWarning(), config.getError())
                 .setHelpWord(config.getHelp())
+                .setHelpConsumer(JMusicBot::help)
                 .setLinkedCacheSize(200)
                 .setGuildSettingsManager(settings)
                 .addCommands(aboutCommand,
@@ -213,5 +215,17 @@ public class JMusicBot
                     + "invalid: " + ex + "\nConfig Location: " + config.getConfigLocation());
             System.exit(1);
         }
+    }
+
+    private static void help(CommandEvent e) {
+        e.getAuthor().openPrivateChannel().queue(privateChannel -> {
+            privateChannel.sendMessage("help").queue(message -> {
+                e.reactSuccess();
+            }, error -> {
+                e.reply("I couldn't dm you help... :(");
+            });
+        }, error -> {
+            e.reply("I couldn't dm you help... :(");
+        });
     }
 }

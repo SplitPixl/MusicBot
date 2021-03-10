@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class YggdrasilIconManager {
@@ -28,22 +29,22 @@ public class YggdrasilIconManager {
 
     public YggdrasilIconManager(Bot bot) {
         this.bot = bot;
-        threadpool.schedule(this::update, 30, TimeUnit.SECONDS);
+        threadpool.schedule(() -> update(true), 30, TimeUnit.SECONDS);
     }
 
-    public void update() {
+    public void update(boolean queueNext) {
         try {
             JDA jda = bot.getJDA();
             TextChannel tc = jda.getTextChannelById(816766416576839691L);
-            if (tc == null)
-                return;
-            tc.getHistoryBefore(tc.getLatestMessageIdLong(), 100).queue(this::doThingWithMessages, this::getHistoryError);
+            if (tc != null) {
+                tc.getHistoryBefore(tc.getLatestMessageIdLong(), 100).queue(m -> doThingWithMessages(m, queueNext), e -> getHistoryError(e, queueNext));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void doThingWithMessages(MessageHistory messageHistory) {
+    private void doThingWithMessages(MessageHistory messageHistory, boolean queueNext) {
         total = messageHistory.size();
         if (messageHistory.size() == usedIcons.size()) {
             usedIcons.clear();
@@ -62,12 +63,14 @@ public class YggdrasilIconManager {
         } catch (IOException | UnirestException e) {
             e.printStackTrace();
         }
-        threadpool.schedule(this::update, 90 + rand(-30L, 30L), TimeUnit.MINUTES);
+        if (queueNext)
+            threadpool.schedule(() -> update(true), 90 + rand(-30L, 30L), TimeUnit.MINUTES);
     }
 
-    private void getHistoryError(Throwable throwable) {
+    private void getHistoryError(Throwable throwable, boolean queueNext) {
         throwable.printStackTrace();
-        threadpool.schedule(this::update, 5, TimeUnit.MINUTES);
+        if (queueNext)
+            threadpool.schedule(() -> update(true), 5, TimeUnit.MINUTES);
     }
 
     long rand(long min, long max) {
