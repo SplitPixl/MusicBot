@@ -30,6 +30,7 @@ import com.jagrosh.jmusicbot.settings.SettingsManager;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.api.*;
@@ -219,7 +220,12 @@ public class JMusicBot
 
     private static void help(CommandEvent e) {
         e.getAuthor().openPrivateChannel().queue(privateChannel -> {
-            privateChannel.sendMessage("help").queue(message -> {
+            privateChannel.sendMessage("the commands are").queue(message -> {
+                privateChannel.sendMessage("uh").queueAfter(500, TimeUnit.MILLISECONDS,  message1 -> {
+                    privateChannel.sendMessage("umm").queueAfter(2000, TimeUnit.MILLISECONDS,  message2 -> {
+                        privateChannel.sendMessage("i forgot").queueAfter(3000, TimeUnit.MILLISECONDS);
+                    });
+                });
                 e.reactSuccess();
             }, error -> {
                 e.reply("I couldn't dm you help... :(");
