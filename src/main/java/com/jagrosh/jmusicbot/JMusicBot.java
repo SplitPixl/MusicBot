@@ -151,7 +151,8 @@ public class JMusicBot
 
                         new SuggestCmd(),
                         new PickRandomCmd(),
-                        new YggIconCmd(bot),
+//                new NameIconCmd(bot, "yggicon", bot.getYggdrasilIconManager(), 344176943354347534L),
+//                new NameIconCmd(bot, "bruhicon", bot.getBruhIconManager(), 710719805413523547L),
                         new GuildLookupCmd(bot),
                         new CorruptCmd()
 

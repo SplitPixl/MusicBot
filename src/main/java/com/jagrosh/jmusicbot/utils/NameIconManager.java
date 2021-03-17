@@ -21,23 +21,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class YggdrasilIconManager {
+public class NameIconManager {
     private ScheduledExecutorService threadpool = Executors.newSingleThreadScheduledExecutor();
     private Bot bot;
     private List<Long> usedIcons = new ArrayList<>();
     private int total = 0;
+    private long channelId = 0;
+    private long serverId = 0;
 
-    public YggdrasilIconManager(Bot bot) {
+    public NameIconManager(Bot bot, long channelId, long serverId) {
         this.bot = bot;
         threadpool.schedule(() -> update(true), 30, TimeUnit.SECONDS);
+        this.channelId = channelId;
+        this.serverId = serverId;
     }
 
     public void update(boolean queueNext) {
         try {
             JDA jda = bot.getJDA();
-            TextChannel tc = jda.getTextChannelById(816766416576839691L);
+            TextChannel tc = jda.getTextChannelById(channelId);
             if (tc != null) {
-                tc.getHistoryBefore(tc.getLatestMessageIdLong(), 100).queue(m -> doThingWithMessages(m, queueNext), e -> getHistoryError(e, queueNext));
+                tc.getHistoryFromBeginning(100).queue(m -> doThingWithMessages(m, queueNext), e -> getHistoryError(e, queueNext));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,7 +60,7 @@ public class YggdrasilIconManager {
         try {
             String iconLink = msg.getAttachments().get(0).getUrl();
             HttpResponse<InputStream> req = Unirest.get(iconLink).asBinary();
-            Objects.requireNonNull(jda.getGuildById(297573025925300226L)).getManager()
+            Objects.requireNonNull(jda.getGuildById(serverId)).getManager()
                     .setName(msg.getContentRaw())
                     .setIcon(Icon.from(req.getBody()))
                     .queue(unused -> {}, Throwable::printStackTrace);

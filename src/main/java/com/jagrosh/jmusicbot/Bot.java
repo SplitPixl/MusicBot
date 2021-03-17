@@ -28,12 +28,10 @@ import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import java.util.Objects;
 
-import com.jagrosh.jmusicbot.utils.YggdrasilIconManager;
+import com.jagrosh.jmusicbot.utils.NameIconManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.swing.*;
 
 /**
  *
@@ -50,8 +48,9 @@ public class Bot
     private final NowplayingHandler nowplaying;
     private final FilterManager filterManager;
     private final AloneInVoiceHandler aloneInVoiceHandler;
-    private final YggdrasilIconManager yggdrasilIconManager;
-    
+    private NameIconManager yggdrasilIconManager;
+    private NameIconManager bruhIconManager;
+
     private boolean shuttingDown = false;
     private JDA jda;
     private GUI gui;
@@ -70,7 +69,8 @@ public class Bot
         this.filterManager = new FilterManager(this);
         this.aloneInVoiceHandler = new AloneInVoiceHandler(this);
         this.aloneInVoiceHandler.init();
-        this.yggdrasilIconManager = new YggdrasilIconManager(this);
+//        this.yggdrasilIconManager = new NameIconManager(this, 816766416576839691L, 297573025925300226L);
+//        this.bruhIconManager = new NameIconManager(this, 821521273410027560L, 499022271571165202L);
     }
     
     public BotConfig getConfig()
@@ -172,7 +172,11 @@ public class Bot
         return filterManager;
     }
 
-    public YggdrasilIconManager getYggdrasilIconManager() {
+    public NameIconManager getYggdrasilIconManager() {
         return yggdrasilIconManager;
+    }
+
+    public NameIconManager getBruhIconManager() {
+        return bruhIconManager;
     }
 }
